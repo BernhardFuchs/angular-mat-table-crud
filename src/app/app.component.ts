@@ -13,18 +13,17 @@ import {ExampleDataSource} from './services/example-data.source';
 
 export class AppComponent implements OnInit {
   displayedColumns = ['id', 'title', 'state', 'url', 'created_at', 'updated_at'];
-  exampleDatabase: DataService | null;
+  dataService: DataService | null;
   dataSource: ExampleDataSource | null;
 
-  constructor(public httpClient: HttpClient,
-              public dataService: DataService) {}
+  constructor(public httpClient: HttpClient) {}
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('filter') filter: ElementRef;
 
   ngOnInit() {
-    console.log('####AppComponent onInit this.exampleDataBase: ', this.exampleDatabase);
+    console.log('####AppComponent onInit this.exampleDataBase: ', this.dataService);
     console.log('####AppComponent onInit this.dataSource: ', this.dataSource);
     console.log('####AppComponent onInit this.displayedColumns: ', this.displayedColumns);
     console.log('####AppComponent onInit this.filter: ', this.filter);
@@ -34,7 +33,7 @@ export class AppComponent implements OnInit {
   }
 
   refresh(): void {
-    console.log('####AppComponent refresh this.exampleDataBase: ', this.exampleDatabase);
+    console.log('####AppComponent refresh this.exampleDataBase: ', this.dataService);
     console.log('####AppComponent refresh this.dataSource: ', this.dataSource);
     console.log('####AppComponent refresh this.displayedColumns: ', this.displayedColumns);
     console.log('####AppComponent refresh this.filter: ', this.filter);
@@ -44,13 +43,11 @@ export class AppComponent implements OnInit {
   }
 
   public loadData(): void {
-    this.exampleDatabase = new DataService(this.httpClient);
-    console.log('####AppComponent loadData this.exampleDataBase: ', this.exampleDatabase);
-    this.dataSource = new ExampleDataSource(this.exampleDatabase, this.paginator, this.sort);
-    console.log('####AppComponent loadData this.dataService: ', this.dataService);
+    this.dataService = new DataService(this.httpClient);
+    console.log('####AppComponent loadData this.exampleDataBase: ', this.dataService);
+    this.dataSource = new ExampleDataSource(this.dataService, this.paginator, this.sort);
     fromEvent(this.filter.nativeElement, 'keyup')
       .subscribe(() => {
-        console.log('####AppComponent loadData fromEvent subscribe this.dataService: ', this.dataService);
         if (!this.dataSource) {
           console.log('####AppComponent loadData fromEvent subscribe in if');
           return;

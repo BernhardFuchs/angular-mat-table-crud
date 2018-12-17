@@ -31,9 +31,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     MatPaginatorModule,
     ReactiveFormsModule
   ],
-  providers: [
-    DataService
-  ],
+  providers: [DataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

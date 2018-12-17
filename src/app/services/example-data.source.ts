@@ -8,6 +8,7 @@ import { MatPaginator, MatSort } from '@angular/material';
 
 @Injectable()
 export class ExampleDataSource extends DataSource<Issue> {
+  _dataChange: BehaviorSubject<Issue[]> = new BehaviorSubject<Issue[]>([]);
   _filterChange = new BehaviorSubject('');
 
   get filter(): string {
@@ -25,7 +26,7 @@ export class ExampleDataSource extends DataSource<Issue> {
   filteredData: Issue[] = [];
   renderedData: Issue[] = [];
 
-  constructor(public _exampleDatabase: DataService,
+  constructor(public _dataService: DataService,
               public _paginator: MatPaginator,
               public _sort: MatSort) {
                 super();
@@ -41,19 +42,25 @@ export class ExampleDataSource extends DataSource<Issue> {
     console.log('####DataSource connect FilterChangeValue: ', this._filterChange.value);
     // Listen for any changes in the base data, sorting, filtering, or pagination
     const displayDataChanges = [
-      this._exampleDatabase.dataChange,
+      this._dataChange,
       this._sort.sortChange,
       this._filterChange,
       this._paginator.page
     ];
     console.log('####DataSource connect displayDataChanges: ,', displayDataChanges);
-    console.log('####DataSource connect exampleDatabase: ,', this._exampleDatabase);
-    this._exampleDatabase.getAllIssues();
+    console.log('####DataSource connect exampleDatabase: ,', this._dataService);
+    this._dataService.getAllIssues().subscribe(data => {
+      console.log('####DataService getAllIssues this.dataChange: ', this._dataChange);
+      console.log('####DataService getAllIssues this.dataChange.value: ', this._dataChange.value);
+      console.log('####DataService getAllIssues this.data.values: ', data.values);
+      console.log('####DataService getAllIssues data:', data);
+      this._dataChange.next(data);
+    });
 
 
     return merge(...displayDataChanges).pipe(map( () => {
       // Filter data
-      this.filteredData = this._exampleDatabase.data.slice().filter((issue: Issue) => {
+      this.filteredData = this._dataChange.value.slice().filter((issue: Issue) => {
         const searchStr = (issue.id + issue.title + issue.url + issue.created_at).toLowerCase();
         return searchStr.indexOf(this.filter.toLowerCase()) !== -1;
       });
